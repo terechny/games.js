@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="wrap">
+         <div class="" id="printer"></div>
+    </div>
+    <style>
+        #wrap{
+            background-color: beige;
+            width: 500px;
+            height: 500px;
+        }
+
+        .romb{           
+            width:20px;
+            height: 20px;
+            background-color:#4682B4;
+            position:absolute;
+            border:1px white solid;
+        }
+
+        #printer{
+            position:absolute;
+            border:1px blue solid;
+            margin-top: 200px;
+            background-color: rgba(205, 214, 219, 0.1);
+            z-index: 1000;
+            width:20px;
+            height: 20px;
+        }
+
+    </style>
+
+    <script>
+
+        class RombGame {
+
+            areaWidth
+            rombWidth
+            endPoint
+
+            constructor(areaWidth, rombWidth){
+
+                this.areaWidth = areaWidth
+                this.rombWidth = rombWidth
+                this.endPoint = areaWidth - rombWidth 
+            }
+
+            move(e){
+
+                console.log(this.areaWidth + " " + this.rombWidth + " " + this.endPoint)
+
+                var printer = document.getElementById("printer");
+                var printerStyle = window.getComputedStyle(printer)
+
+                var left = parseInt(printerStyle.marginLeft)
+                var top =  parseInt(printerStyle.marginTop)
+
+                var rombCatch = this.checkRomb(e, left, top)
+
+                switch(e.key){
+                    case "ArrowLeft":
+                        if( left > 0 ){                       
+                            printer.style.marginLeft = ( left - this.rombWidth ) + "px"
+                        }
+                        break
+                    case "ArrowUp":
+                        if( top > 0 ){
+                            printer.style.marginTop = ( top - this.rombWidth ) + "px"
+                        }                    
+                        break
+                    case "ArrowDown":
+                        if( top < this.endPoint ){
+                            printer.style.marginTop = ( top + this.rombWidth ) + "px"
+                        }
+                        break
+                    case "ArrowRight":
+                        if( left < this.endPoint ){
+                            printer.style.marginLeft = ( left + this.rombWidth ) + "px"
+                        }
+                        break
+                    case "Enter":
+            
+                        if( !rombCatch ){
+                            this.createRomb(top, left)
+                        }
+                        break  
+                }
+            }
+
+            checkRomb(e, left, top){
+
+                var rombCatch = false;
+
+                var rombs = document.getElementsByClassName("romb");
+
+                for(let romb of rombs){
+                
+                    var rombStyle = window.getComputedStyle(romb)
+                    var rombLeft = parseInt(rombStyle.marginLeft)
+                    var rombTop = parseInt(rombStyle.marginTop)
+
+                    if( left == rombLeft & top == rombTop ){
+                
+                        rombCatch = true;
+
+                        if( e.key == "Enter" ){
+
+                            var currentColor = romb.style.backgroundColor;
+                            romb.style.backgroundColor = "#00FF7F"
+
+                            if( currentColor == 'rgb(0, 255, 127)' ){
+
+                                romb.style.backgroundColor = "#4682B4"  
+                            }          
+                        }
+
+                        if( e.key == "Delete" ){
+                            romb.remove()  
+                        }
+                    }
+                }
+
+                return rombCatch
+            }
+
+            createRomb(top, left){
+
+                var wrap = document.getElementById("wrap")
+                var new_romb = document.createElement("div")
+                new_romb.className = "romb"
+                new_romb.style.marginTop = top + "px"
+                new_romb.style.marginLeft = left + "px"
+                wrap.appendChild(new_romb);
+            }
+
+        }
+
+
+        const Romb = new RombGame(500,20)
+        
+        addEventListener("keydown", e => Romb.move(e))
+
+    </script>
+</body>
+</html>
