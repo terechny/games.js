@@ -103,19 +103,44 @@
                         }
                         break
                     case "Enter":
-            
-                        if( !rombCatch ){
+                                   
+                        if( !rombCatch['catch'] ){
+
                             this.createRomb(top, left)
+                            
+                        }else{
+                            
+                            this.rombChange(rombCatch['element'])
                         }
-                        break  
+                        break 
+                    case "Delete":
+
+                       if(rombCatch['catch']){
+                            rombCatch['element'].remove()
+                       } 
+                       
+                       break
                 }
+            }
+
+            rombChange(romb){
+                
+                var currentColor = romb.style.backgroundColor;
+                romb.style.backgroundColor = "#00FF7F"
+
+                if( currentColor == 'rgb(0, 255, 127)' ){
+
+                    romb.style.backgroundColor = "#4682B4"  
+                } 
             }
 
             checkRomb(e, left, top){
 
-                var rombCatch = false;
+                var rombCatch = {}
 
-                var rombs = document.getElementsByClassName("romb");
+                rombCatch['catch'] = false;
+                
+                const rombs = document.getElementsByClassName("romb");
 
                 for(let romb of rombs){
                 
@@ -123,24 +148,10 @@
                     var rombLeft = parseInt(rombStyle.marginLeft)
                     var rombTop = parseInt(rombStyle.marginTop)
 
-                    if( left == rombLeft & top == rombTop ){
+                    if( left == rombLeft && top == rombTop ){
                 
-                        rombCatch = true;
-
-                        if( e.key == "Enter" ){
-
-                            var currentColor = romb.style.backgroundColor;
-                            romb.style.backgroundColor = "#00FF7F"
-
-                            if( currentColor == 'rgb(0, 255, 127)' ){
-
-                                romb.style.backgroundColor = "#4682B4"  
-                            }          
-                        }
-
-                        if( e.key == "Delete" ){
-                            romb.remove()  
-                        }
+                        rombCatch['catch'] = true
+                        rombCatch['element'] = romb 
                     }
                 }
 
