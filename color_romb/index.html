@@ -61,17 +61,17 @@
             areaWidth
             rombWidth
             endPoint
+            colors
 
-            constructor(areaWidth, rombWidth){
+            constructor(areaWidth, rombWidth, colors){
 
                 this.areaWidth = areaWidth
                 this.rombWidth = rombWidth
                 this.endPoint = areaWidth - rombWidth 
+                this.colors = colors
             }
 
-            move(e){
-
-                console.log(this.areaWidth + " " + this.rombWidth + " " + this.endPoint)
+            start(e){
 
                 var printer = document.getElementById("printer");
                 var printerStyle = window.getComputedStyle(printer)
@@ -124,14 +124,24 @@
             }
 
             rombChange(romb){
-                
-                var currentColor = romb.style.backgroundColor;
-                romb.style.backgroundColor = "#00FF7F"
 
-                if( currentColor == 'rgb(0, 255, 127)' ){
+                const currentColor = window.getComputedStyle(romb).backgroundColor;
 
-                    romb.style.backgroundColor = "#4682B4"  
-                } 
+                for (let index = 0; index < this.colors.length; index++) {
+
+                    if ( currentColor == this.colors[index] ){
+                            
+                        var colorIndex = index
+
+                        colorIndex++ 
+
+                        if( colorIndex ==  this.colors.length ){
+                            colorIndex = 0
+                        }   
+                                                  
+                        romb.style.backgroundColor = this.colors[colorIndex]                       
+                    }                 
+                }
             }
 
             checkRomb(e, left, top){
@@ -170,10 +180,17 @@
 
         }
 
+        let colors = [
+                    "rgb(70, 130, 180)", 
+                    "rgb(0, 255, 127)",
+                    "rgb(235, 97, 88)",
+                    "rgb(255, 255, 255)"
+                ]
 
-        const Romb = new RombGame(500,20)
+
+        const Romb = new RombGame(500,20, colors)
         
-        addEventListener("keydown", e => Romb.move(e))
+        addEventListener("keydown", e => Romb.start(e))
 
     </script>
 </body>
