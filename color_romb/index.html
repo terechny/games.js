@@ -56,57 +56,110 @@
 
     <script>
 
+        class Printer
+        {
+
+            printer
+            left
+            top
+            rombWidth
+            areaWidth
+
+            constructor(areaWidth=500, rombWidth=20){
+
+                this.printer = document.getElementById("printer");
+                this.rombWidth = rombWidth
+                this.areaWidth = areaWidth
+                this.endPoint = areaWidth - rombWidth
+                
+            }
+
+            setLocation(){
+                
+                const printerStyle = window.getComputedStyle(this.printer)
+
+                this.left = parseInt(printerStyle.marginLeft)
+                this.top =  parseInt(printerStyle.marginTop)
+
+                console.log( this.left + " " + this.top )
+            }  
+
+            moveLeft(){
+                console.log("Left")
+                if( this.left > 0 ){                       
+                    this.printer.style.marginLeft = ( this.left - this.rombWidth ) + "px"
+                }
+            }
+            moveRight(){
+                console.log("Right")
+                if( this.left < this.endPoint ){
+                    this.printer.style.marginLeft = ( this.left + this.rombWidth ) + "px"
+                }
+            }
+            moveUp(){
+                console.log("Up")
+                if( this.top > 0 ){
+                    this.printer.style.marginTop = ( this.top - this.rombWidth ) + "px"
+                } 
+            }
+            moveDown(){
+                console.log("Down")
+                if( this.top < this.endPoint ){
+                    this.printer.style.marginTop = ( this.top + this.rombWidth ) + "px"
+                }
+            }
+
+        }
+
         class RombGame {
 
-            areaWidth
-            rombWidth
-            endPoint
             colors
+            printer
+            left
+            top
+            printerClass
 
-            constructor(areaWidth, rombWidth, colors){
 
-                this.areaWidth = areaWidth
-                this.rombWidth = rombWidth
-                this.endPoint = areaWidth - rombWidth 
+            constructor(Printer, colors){
+
                 this.colors = colors
+                this.printerClass = Printer
             }
 
             start(e){
 
-                var printer = document.getElementById("printer");
-                var printerStyle = window.getComputedStyle(printer)
+                this.getPrinter()
 
-                var left = parseInt(printerStyle.marginLeft)
-                var top =  parseInt(printerStyle.marginTop)
+                let rombCatch = this.checkRomb(e, this.left, this.top)
 
-                var rombCatch = this.checkRomb(e, left, top)
+                this.printerClass.setLocation()
 
                 switch(e.key){
                     case "ArrowLeft":
-                        if( left > 0 ){                       
-                            printer.style.marginLeft = ( left - this.rombWidth ) + "px"
-                        }
+
+                        this.printerClass.moveLeft()
                         break
+
                     case "ArrowUp":
-                        if( top > 0 ){
-                            printer.style.marginTop = ( top - this.rombWidth ) + "px"
-                        }                    
+
+                        this.printerClass.moveUp()                  
                         break
+
                     case "ArrowDown":
-                        if( top < this.endPoint ){
-                            printer.style.marginTop = ( top + this.rombWidth ) + "px"
-                        }
+
+                        this.printerClass.moveDown()
                         break
+
                     case "ArrowRight":
-                        if( left < this.endPoint ){
-                            printer.style.marginLeft = ( left + this.rombWidth ) + "px"
-                        }
+
+                        this.printerClass.moveRight()
                         break
+
                     case "Enter":
                                    
                         if( !rombCatch['catch'] ){
 
-                            this.createRomb(top, left)
+                            this.createRomb(this.top, this.left)
                             
                         }else{
                             
@@ -122,6 +175,15 @@
                        break
                 }
             }
+
+            getPrinter(){
+
+                this.printer = document.getElementById("printer");
+                const printerStyle = window.getComputedStyle(this.printer)
+
+                this.left = parseInt(printerStyle.marginLeft)
+                this.top =  parseInt(printerStyle.marginTop)
+            }            
 
             rombChange(romb){
 
@@ -188,7 +250,7 @@
                 ]
 
 
-        const Romb = new RombGame(500,20, colors)
+        const Romb = new RombGame(new Printer, colors)
         
         addEventListener("keydown", e => Romb.start(e))
 
