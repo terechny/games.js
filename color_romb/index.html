@@ -64,13 +64,17 @@
             top
             rombWidth
             areaWidth
+            rombClass
+            colors
 
-            constructor(areaWidth=500, rombWidth=20){
+            constructor(rombClass, areaWidth, rombWidth, colors){
 
                 this.printer = document.getElementById("printer");
                 this.rombWidth = rombWidth
                 this.areaWidth = areaWidth
                 this.endPoint = areaWidth - rombWidth
+                this.rombClass = rombClass
+                this.colors = colors
                 
             }
 
@@ -80,91 +84,155 @@
 
                 this.left = parseInt(printerStyle.marginLeft)
                 this.top =  parseInt(printerStyle.marginTop)
-
-                console.log( this.left + " " + this.top )
             }  
 
             moveLeft(){
-                console.log("Left")
+
                 if( this.left > 0 ){                       
                     this.printer.style.marginLeft = ( this.left - this.rombWidth ) + "px"
                 }
             }
             moveRight(){
-                console.log("Right")
+
                 if( this.left < this.endPoint ){
                     this.printer.style.marginLeft = ( this.left + this.rombWidth ) + "px"
                 }
             }
             moveUp(){
-                console.log("Up")
+
                 if( this.top > 0 ){
                     this.printer.style.marginTop = ( this.top - this.rombWidth ) + "px"
                 } 
             }
             moveDown(){
-                console.log("Down")
+
                 if( this.top < this.endPoint ){
                     this.printer.style.marginTop = ( this.top + this.rombWidth ) + "px"
                 }
             }
 
+            rombIsset(e){
+
+                return this.rombClass.isset(e, this.left, this.top)
+            }
+
+            changeRomb(){
+
+                this.rombClass.change(this.colors)
+            }
+
+            createRomb(){
+
+                this.rombClass.create(this.top, this.left)
+            }
+
+        }
+
+        class Romb 
+        {
+
+            romb
+
+            isset(e, left, top){
+
+                var data = {}
+                data['isset'] = false;
+                const rombs = document.getElementsByClassName("romb");
+
+                for(let romb of rombs){
+
+                    var rombStyle = window.getComputedStyle(romb)
+                    var rombLeft = parseInt(rombStyle.marginLeft)
+                    var rombTop = parseInt(rombStyle.marginTop)
+
+                    if( left == rombLeft && top == rombTop ){
+
+                        data['isset'] = true
+                        data['element'] = romb 
+                    }
+                }
+
+                this.romb = data['element']
+                return  data['isset']
+            }
+
+            create(top, left){
+
+                var wrap = document.getElementById("wrap")
+                var new_romb = document.createElement("div")
+                new_romb.className = "romb"
+                new_romb.style.marginTop = top + "px"
+                new_romb.style.marginLeft = left + "px"
+                wrap.appendChild(new_romb);
+            }
+
+            change(colors){
+
+                const currentColor = window.getComputedStyle(this.romb).backgroundColor;
+
+                for (let index = 0; index < colors.length; index++) {
+
+                    if ( currentColor == colors[index] ){
+                            
+                        var colorIndex = index
+
+                        colorIndex++ 
+
+                        if( colorIndex ==  colors.length ){
+                            colorIndex = 0
+                        }   
+                                                
+                        this.romb.style.backgroundColor = colors[colorIndex]                       
+                    }                 
+                }               
+            }
         }
 
         class RombGame {
 
-            colors
-            printer
-            left
-            top
-            printerClass
+            Printer
 
+            constructor(Printer){
 
-            constructor(Printer, colors){
-
-                this.colors = colors
-                this.printerClass = Printer
+                this.Printer = Printer
             }
 
-            start(e){
+            move(e){
 
-                this.getPrinter()
-
-                let rombCatch = this.checkRomb(e, this.left, this.top)
-
-                this.printerClass.setLocation()
+                this.Printer.setLocation()
 
                 switch(e.key){
                     case "ArrowLeft":
 
-                        this.printerClass.moveLeft()
+                        this.Printer.moveLeft()
                         break
 
                     case "ArrowUp":
 
-                        this.printerClass.moveUp()                  
+                        this.Printer.moveUp()                  
                         break
 
                     case "ArrowDown":
 
-                        this.printerClass.moveDown()
+                        this.Printer.moveDown()
                         break
 
                     case "ArrowRight":
 
-                        this.printerClass.moveRight()
+                        this.Printer.moveRight()
                         break
 
                     case "Enter":
-                                   
-                        if( !rombCatch['catch'] ){
+                    
+                        if(this.Printer.rombIsset()){
 
-                            this.createRomb(this.top, this.left)
-                            
+                            this.Printer.changeRomb()
+
                         }else{
-                            
-                            this.rombChange(rombCatch['element'])
+
+                            this.Printer.createRomb()
                         }
+                    
                         break 
                     case "Delete":
 
@@ -175,71 +243,6 @@
                        break
                 }
             }
-
-            getPrinter(){
-
-                this.printer = document.getElementById("printer");
-                const printerStyle = window.getComputedStyle(this.printer)
-
-                this.left = parseInt(printerStyle.marginLeft)
-                this.top =  parseInt(printerStyle.marginTop)
-            }            
-
-            rombChange(romb){
-
-                const currentColor = window.getComputedStyle(romb).backgroundColor;
-
-                for (let index = 0; index < this.colors.length; index++) {
-
-                    if ( currentColor == this.colors[index] ){
-                            
-                        var colorIndex = index
-
-                        colorIndex++ 
-
-                        if( colorIndex ==  this.colors.length ){
-                            colorIndex = 0
-                        }   
-                                                  
-                        romb.style.backgroundColor = this.colors[colorIndex]                       
-                    }                 
-                }
-            }
-
-            checkRomb(e, left, top){
-
-                var rombCatch = {}
-
-                rombCatch['catch'] = false;
-                
-                const rombs = document.getElementsByClassName("romb");
-
-                for(let romb of rombs){
-                
-                    var rombStyle = window.getComputedStyle(romb)
-                    var rombLeft = parseInt(rombStyle.marginLeft)
-                    var rombTop = parseInt(rombStyle.marginTop)
-
-                    if( left == rombLeft && top == rombTop ){
-                
-                        rombCatch['catch'] = true
-                        rombCatch['element'] = romb 
-                    }
-                }
-
-                return rombCatch
-            }
-
-            createRomb(top, left){
-
-                var wrap = document.getElementById("wrap")
-                var new_romb = document.createElement("div")
-                new_romb.className = "romb"
-                new_romb.style.marginTop = top + "px"
-                new_romb.style.marginLeft = left + "px"
-                wrap.appendChild(new_romb);
-            }
-
         }
 
         let colors = [
@@ -249,10 +252,9 @@
                     "rgb(255, 255, 255)"
                 ]
 
-
-        const Romb = new RombGame(new Printer, colors)
+        const Game = new RombGame(new Printer( new Romb, 500, 20, colors ))
         
-        addEventListener("keydown", e => Romb.start(e))
+        addEventListener("keydown", e => Game.move(e))
 
     </script>
 </body>
