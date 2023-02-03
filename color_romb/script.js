@@ -69,6 +69,10 @@ class Printer
         this.rombClass.create(this.top, this.left)
     }
 
+    deleteRomb(){
+        this.rombClass.delete()
+    }
+
 }
 
 class Romb 
@@ -129,6 +133,10 @@ class Romb
             }                 
         }               
     }
+
+    delete(){
+        this.romb.remove()
+    }
 }
 
 class RombGame {
@@ -179,9 +187,10 @@ class RombGame {
                 break 
             case "Delete":
 
-               if(rombCatch['catch']){
-                    rombCatch['element'].remove()
-               } 
+                if(this.Printer.rombIsset()){
+
+                    this.Printer.deleteRomb()
+                }
                
                break
         }
