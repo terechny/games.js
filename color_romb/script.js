@@ -53,10 +53,10 @@ class Printer
             this.printer.style.marginTop = ( this.top + this.rombWidth ) + "px"
         }
     }
+   
+    rombIsset(){
 
-    rombIsset(e){
-
-        return this.rombClass.isset(e, this.left, this.top)
+        return this.rombClass.isset(this.left, this.top)
     }
 
     changeRomb(){
@@ -70,47 +70,67 @@ class Printer
     }
 
     deleteRomb(){
-        this.rombClass.delete()
+        this.rombClass.delete(this.top, this.left)
     }
-
+    
 }
 
-class Romb 
+class Romb
 {
 
     romb
+    stateMap = {}
 
-    isset(e, left, top){
+    setMapValue(top, left, element){
 
-        var data = {}
-        data['isset'] = false;
-        const rombs = document.getElementsByClassName("romb");
+        let kay = top + "-" + left
 
-        for(let romb of rombs){
+        if( this.stateMap[kay] == undefined ){
 
-            var rombStyle = window.getComputedStyle(romb)
-            var rombLeft = parseInt(rombStyle.marginLeft)
-            var rombTop = parseInt(rombStyle.marginTop)
+            this.stateMap[kay] = element
+        }     
+    }
 
-            if( left == rombLeft && top == rombTop ){
+    printPoint(){
 
-                data['isset'] = true
-                data['element'] = romb 
-            }
+        var wrap = document.getElementById("wrap")
+        var printer = document.getElementById("printer")
+        wrap.innerHTML = '';
+
+        for( let element in this.stateMap ){
+
+            wrap.appendChild(this.stateMap[element]);
         }
 
-        this.romb = data['element']
-        return  data['isset']
+        wrap.appendChild(printer);
+    }
+
+    isset(left, top){
+
+        let key = top + "-" + left
+
+        if( this.stateMap.hasOwnProperty(key)){
+
+            this.romb = this.stateMap[key] 
+
+            return true
+            
+        }else{
+
+            return false
+        }       
     }
 
     create(top, left){
 
-        var wrap = document.getElementById("wrap")
         var new_romb = document.createElement("div")
-        new_romb.className = "romb"
+        
         new_romb.style.marginTop = top + "px"
         new_romb.style.marginLeft = left + "px"
-        wrap.appendChild(new_romb);
+        new_romb.className = "romb"
+
+        this.setMapValue(top, left, new_romb)
+        this.printPoint()
     }
 
     change(colors){
@@ -123,19 +143,25 @@ class Romb
                     
                 var colorIndex = index
 
-                colorIndex++ 
-
-                if( colorIndex ==  colors.length ){
+                if( ++colorIndex ==  colors.length ){
                     colorIndex = 0
                 }   
                                         
                 this.romb.style.backgroundColor = colors[colorIndex]                       
             }                 
-        }               
+        } 
     }
 
-    delete(){
-        this.romb.remove()
+    delete(top, left){
+
+        let key = top + "-" + left
+
+        if( this.stateMap.hasOwnProperty(key)){
+
+            delete this.stateMap[key] 
+        }
+        
+        this.printPoint()
     }
 }
 

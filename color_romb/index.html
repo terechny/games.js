@@ -18,9 +18,9 @@
         </div>  
         <hr>
         <h1> Color Romb </h1>        
-        <div class="mt-4" id="wrap" >
+        <div class="mt-4" id="wrap">
             <div class="" id="printer"></div>
-        </div>
+        </div>        
         <div class="mt-4">
             <ul>
                 <li> - Arrow keys move the square. </li>
@@ -37,12 +37,26 @@
             height: 500px;
         }
 
+        #wrap-copy{
+            background-color: beige;
+            width: 500px;
+            height: 500px;
+        }        
+
         .romb{           
             width:20px;
             height: 20px;
             background-color:#4682B4;
             position:absolute;
             border:1px white solid;
+        }
+
+        .new-romb{
+            width:20px;
+            height: 20px;
+            background-color:#4682B4;
+            position:absolute;
+            border:1px white solid;            
         }
 
         #printer{
@@ -56,8 +70,7 @@
         }
 
     </style>
-
-    <script src="./script.js?v=021"></script>
+    <script src = "./script.js?v=96366"> </script>
     <script>
 
         let colors = [
@@ -65,10 +78,9 @@
                     "rgb(0, 255, 127)",
                     "rgb(235, 97, 88)",
                     "rgb(255, 255, 255)"
-                ]
-
-        const Game = new RombGame(new Printer( new Romb, 500, 20, colors ))
-        
+        ]
+ 
+        const Game = new RombGame(new Printer( new Romb, 500, 20, colors ))        
         addEventListener("keydown", e => Game.move(e))
 
     </script>
