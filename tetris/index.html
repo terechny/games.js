@@ -61,203 +61,111 @@
         {
 
             TetrisElements
+            PassedClasses = {}
+            ActiveClass
+            tochArray = {}
+            tetrisElementIndex
 
             constructor(elements){
 
-                TetrisElements = elements
+                this.TetrisElements = elements
 
             }
 
+            setPassedClassesCount(className){
 
-        }
-      
-        class Tetris
-        {
+                if( ! this.PassedClasses.hasOwnProperty(className) ){
 
-            elements
-            activeClassName
-            wind
-            randomIndex
-            windStyle
-            tochArray
-            winWidth
-            fullRowCount
-            passedClasses = {}
-            scorePoint = 0
-            active
+                    this.PassedClasses[className] = 0;
+                } 
 
-            constructor(elements){
-
-                this.elements = elements
-                this.wind = document.getElementById("window")
-                this.windStyle = window.getComputedStyle(this.wind)
-                this.winWidth = Number( this.windStyle.width.slice(0,-2)) 
-                this.fullRowCount = this.winWidth/20
+                return this.PassedClasses[className]++  
             }
 
-            move(e){
-                
-                this.active = document.getElementsByClassName(this.activeClassName )
-                
-                if(e.key == 'Enter'){ this.create() }
-                if(e.key == 'Shift'){ this.flip() }
+            moveElemet(styles, classCurrent = this.ActiveClass ){
 
-               
-                for (var i = 0; i < this.active.length; i++) {
-                    
-                    let data = this.getCoortinateKey(this.active[i])
+                const activeClassElements = document.getElementsByClassName(classCurrent)
 
-                    switch(e.key){
+                for (var i = 0; i < activeClassElements.length; i++) {
 
-                        case 'ArrowDown':                    
-                            this.active[i].style.marginTop = data.top + 20 + "px"
-                            break
+                    let top =  activeClassElements[i].style.marginTop.length > 0 ? parseInt( activeClassElements[i].style.marginTop.slice(0, -2) ) : 0;
+                    let left =  activeClassElements[i].style.marginLeft.length > 0 ? parseInt( activeClassElements[i].style.marginLeft.slice(0, -2) ) : 0;
 
-                        case "ArrowRight":                      
-                            this.active[i].style.marginLeft = data.left + 20 + "px"
-                            break
+                    let stileNext = styles.length < 4 ? styles[0] : styles[i]
 
-                        case "ArrowLeft":
-                            this.active[i].style.marginLeft = data.left - 20 + "px"                   
-                            break
-                    }                
-                }                
+                    stileNext.forEach(function(item, styleIndex, array) {
 
-                this.coordidate()
- 
-            }
-
-            coordidate(){
-
-                let winHeight = Number( this.windStyle.height.slice(0,-2))              
-                let touchStatus = false
-
-                this.countRowsForDelete()
-
-                for (var i = 0; i < this.active.length; i++) {
-
-                    let data = this.getCoortinateKey(this.active[i])
-
-                    if(this.tochArray.hasOwnProperty( data.key ) ){
-
-                        touchStatus = true;                    
-                    } 
-
-                    if( winHeight ==  data.top + 20 ){
-
-                        touchStatus = true;                       
-                    }             
-                }
-
-                touchStatus ? this.addTouhStatus() : null ;
-
-            } 
-
-            addTouhStatus(){
-
-                for (var i = 0; i < this.active.length; i++) {
-
-                    this.active[i].classList.add('touch')
-                }  
-
-                this.create()
-            }
-            
-            create(position=0){
-
-                this.randomIndex = Math.floor(Math.random() * 3)
-               
-                let element = this.elements[this.randomIndex]
-                let clases = element.classes
-                let styles = element.stiles[position]    
-                
-                if( ! this.passedClasses.hasOwnProperty(clases[1]) ){
-
-                         this.passedClasses[clases[1]] = 0;
-                    } 
-
-                this.passedClasses[clases[1]]++
-
-                let classElLen = this.passedClasses[clases[1]]
-
-                this.activeClassName = element.classes[1] + "-" + classElLen
-
-                const wind = this.wind
-
-                styles.forEach(function(items, is, arrs) {
-
-                    let divEdement = document.createElement("div")
-
-                    clases.forEach(function(classItem, ic, classArr){
-
-                        divEdement.classList.add(classItem)
-
-                        if(ic == 1){
-
-                            let classGroup = classItem + "-" + classElLen
+                        if(item !== 0){
                             
-                            let elClass = classGroup + "-" + ++is
+                            switch(styleIndex){
 
-                            divEdement.classList.add(classGroup)
-                            divEdement.classList.add(elClass)
-                            divEdement.innerText = is
-                            divEdement.dataset.position = position
-                        } 
-                                            
+                                case 0:     
+
+                                    activeClassElements[i].style.marginTop = ( top + item ) + "px" 
+                                    break
+
+                                case 1:     
+
+                                    activeClassElements[i].style.marginLeft = ( left - item ) + "px" 
+                                    break                                    
+
+                                case 3:   
+
+                                    activeClassElements[i].style.marginLeft = ( left + item ) + "px"
+                                    break
+                            }                             
+                        }                       
                     })
-                                                    
-                    items.forEach(function(item, i, arr) {
-
-                        if( parseInt(item) > 0 ) {
-
-                            if( i == 0 ){
-                                divEdement.style.marginTop = item + "px" 
-                            }
-                            if( i == 1 ){}
-                            if( i == 2 ){}  
-                            if( i == 3 ){                            
-                                divEdement.style.marginLeft =  item + "px"
-                            }                                                                                            
-                        }               
-                    })
-                    
-                    wind.appendChild(divEdement)
-                }) 
+                }               
+  
+                this.checkTouch()                             
             }
 
-            flip(){
+            touchElementCounter(){
 
-                if( this.activeClassName !==  'smashboy-0' ){
+                let touchElements = document.getElementsByClassName('touch')                                
+                this.tochArray = {}
 
-                    let nextPositionIndex = parseInt(this.active[0].dataset.position ) + 1 
+                for (var i = 0; i < touchElements.length; i++) {
+
+                    let top =  Number( touchElements[i].style.marginTop.slice(0,-2) )
+                    let left =  Number( touchElements[i].style.marginLeft.slice(0,-2) )
+
+                    if( ! this.tochArray.hasOwnProperty(top) ){
+                        this.tochArray[top] = {};
+                    }
                     
-                    if( nextPositionIndex > 4 ){ nextPositionIndex = 1 }
-
-                    let nextPosition = this.elements[this.randomIndex].stiles[nextPositionIndex]
-
-                    for (var i = 0; i < this.active.length; i++) {
-
-                        let el = window.getComputedStyle(this.active[i])
-                        let left = parseInt(el.marginLeft)
-                        let top =  parseInt(el.marginTop)
-
-                        this.active[i].style.marginTop = top + nextPosition[i][0] + "px"
-                        this.active[i].style.marginLeft = left + nextPosition[i][3] + "px"  
-                        this.active[i].dataset.position = nextPositionIndex            
-                    }                    
+                    this.tochArray[top][left] = left
                 }
-            }
 
+                let moveCount = 0
+
+                for(let key in this.tochArray){
+
+                    if( Object.keys(this.tochArray[key]).length == 20 ){
+                       
+                        this.deleteRow(touchElements, key)
+                        
+                        moveCount++
+                    }
+                }
+
+                for(i=0; i < moveCount; i++){
+
+                    this.moveElemet( [[20, 0, 0, 0]] , 'touch')           
+                }                   
+            }  
+            
             deleteRow(elements, row){
-             
+               
                 let deletRows = [];
 
                 for (var i = 0; i < elements.length; i++) {
 
-                    let elnTop =  Number( elements[i].style.marginTop.slice(0,-2) )
-
-                    if(  Number(row) == elnTop ){
-                        
+                    let top =  Number( elements[i].style.marginTop.slice(0,-2) )
+                  
+                    if(  Number(row) == top ){
+                     
                         deletRows[i] = elements[i];
                     }
                 }
@@ -265,93 +173,181 @@
                 for( let el in deletRows){
 
                     deletRows[el].remove()
+                }                  
+            }            
+            
 
-                    this.scorePoint++
-                }   
+            checkTouch(){
+
+                const activeClassElements = document.getElementsByClassName(this.ActiveClass )
+                const windowsHeight = parseInt( window.getComputedStyle( document.getElementById("window") ).height.slice(0, -2) )
                 
-                this.scoreUpdate()
-            }
+                for( let i = 0; i < activeClassElements.length; i++ ){
 
-            scoreUpdate(){
+                    let top =  activeClassElements[i].style.marginTop.length > 0 ? parseInt( activeClassElements[i].style.marginTop.slice(0, -2) ) : 0;
+                    let left =  activeClassElements[i].style.marginLeft.length > 0 ? parseInt( activeClassElements[i].style.marginLeft.slice(0, -2) ) : 0;
 
-                let score = document.getElementById('score').textContent = this.scorePoint
-            }
+                    if(  this.touchStatus( top + 20, left) ){
 
-            moveDownRows(elements, deletedRowsCount){
-
-                if(deletedRowsCount > 0){   
-
-                    for( let i = 1; i <= deletedRowsCount; i++  ){
-
-                        this.moveDownRow(elements)
+                        this.addTouhStatus()
+                        this.create()
+                        this.touchElementCounter()
+                        break
                     }
-                }
+                }             
             }
 
-            moveDownRow(elements){
+            touchStatus(top, left){
 
-                for (var i = 0; i < elements.length; i++) {
+                if( top == 500 ){ return true }
 
-                    let el = window.getComputedStyle(elements[i])
-                    let top =  parseInt(el.marginTop)
-                    elements[i].style.marginTop = top + 20 + "px"
-                }
+                if( this.tochArray.hasOwnProperty(  top  ) ){ 
+
+                    return this.tochArray[top].hasOwnProperty( left ) ? true : false ;
+                } 
             }
 
-            countRowsForDelete(){
+            addTouhStatus(){
 
-                let touchElements = document.getElementsByClassName('touch') 
-                let rowCount = {}            
-                this.tochArray = {}
-                
-                for (var i = 0; i < touchElements.length; i++) {
+                const activeClassElements = document.getElementsByClassName(this.ActiveClass )
 
-                    let elnTop =  Number( touchElements[i].style.marginTop.slice(0,-2) )
-                    let elnLeft =  Number( touchElements[i].style.marginLeft.slice(0,-2) )
-                    let key = elnTop +'-'+ elnLeft 
+                for (var i = 0; i < activeClassElements.length; i++) {
 
-                    this.tochArray[key] = key;
-
-                    if( ! rowCount.hasOwnProperty(elnTop) ){
-                        rowCount[elnTop] = 0;
-                    } 
-                    rowCount[elnTop]++                    
-                }
-           
-                let deletedRowsCount = 0;
-
-                for(let row in rowCount){
-
-                    if( this.fullRowCount == rowCount[row] ){
-
-                        this.deleteRow(touchElements, row)
-                        deletedRowsCount++
-                    }
-                }
-
-                this.moveDownRows(touchElements, deletedRowsCount)           
+                    activeClassElements[i].classList.add('touch')
+                }  
             }
 
-            getCoortinateKey(element){
+            create(){
 
-                let el = window.getComputedStyle(element)
+                this.tetrisElementIndex = Math.floor(Math.random() * this.TetrisElements.length)
 
-                let left = parseInt(el.marginLeft)
-                let top =  parseInt(el.marginTop)
-                
-                let distToTop = parseInt( top ) + 20
+                let element = this.TetrisElements[ this.tetrisElementIndex ]
+                let clases = element.classes
+                let styles = element.stiles[0]  
+                              
+                this.ActiveClass = clases[1] + "_" + this.setPassedClassesCount(clases[1])
 
-                let key = distToTop +'-'+ parseInt(left)
+                let activeClass = this.ActiveClass
 
-                return { 
-                        'left': left, 
-                        'top': top, 
-                        'key': key 
-                       }              
+                styles.forEach(function(items, i, array) {
+
+                    let divEdement = document.createElement("div")
+
+                    divEdement.classList.add(clases[0], clases[1], activeClass)
+                    divEdement.dataset.position = 0
+                    document.getElementById("window").appendChild(divEdement)
+                })   
+
+                this.moveElemet(styles)                         
             }
-        
+
+            down(){
+
+                let move =   [
+                        [20, 0, 0, 0],
+                        [20, 0, 0, 0],
+                        [20, 0, 0, 0],
+                        [20, 0, 0, 0]  
+                    ]
+
+                this.moveElemet(move)
+
+            }
+
+            left(){
+
+                let move =   [
+                        [0, 20, 0, 0],
+                        [0, 20, 0, 0],
+                        [0, 20, 0, 0],
+                        [0, 20, 0, 0]  
+                    ]
+
+                this.moveElemet(move)                
+
+            }
+
+            right(){
+
+                let move =   [
+                        [0, 0, 0, 20],
+                        [0, 0, 0, 20],
+                        [0, 0, 0, 20],
+                        [0, 0, 0, 20]  
+                    ]
+
+                this.moveElemet(move)                 
+
+            }
+
+            flip(){
+
+                const activeClassElements = document.getElementsByClassName(this.ActiveClass )
+
+                let nextPositionIndex =  parseInt(activeClassElements[0].dataset.position) + 1 
+
+                if( nextPositionIndex > 4 ){ nextPositionIndex = 1 }
+
+                let nextPosition = this.TetrisElements[ this.tetrisElementIndex ].stiles[nextPositionIndex]
+
+                this.moveElemet(nextPosition)
+
+                for (var i = 0; i < activeClassElements.length; i++) {
+
+                    activeClassElements[i].dataset.position = nextPositionIndex
+                }                  
+            }
         }
+
+        class Tetris
+        {
+
+            ElementsClass
+
+            constructor(elementsClass){
+
+                this.ElementsClass = elementsClass
+            }
+
+            controller(e){
         
+                switch(e.key){
+
+                    case 'Enter':     
+
+                        this.ElementsClass.create()
+                        break
+
+                    case 'ArrowDown':   
+
+                        this.ElementsClass.down()
+                        break
+
+                    case "ArrowRight": 
+
+                        this.ElementsClass.right()
+                        break
+
+                    case "ArrowLeft":
+
+                        this.ElementsClass.left()                  
+                        break
+
+                    case "Shift":
+
+                        this.ElementsClass.flip()                  
+                        break  
+
+                     default: 
+                     
+                        break
+
+                }                   
+
+            }
+
+        }
+      
         const TetrisElements = [
 
             {                   
@@ -438,9 +434,12 @@
         
         ]  
 
-        const tetris = new Tetris(TetrisElements)
+        const tetris = new Tetris( new Elements(TetrisElements) )
 
-        addEventListener('keydown', event => { tetris.move(event) } )
+        addEventListener('keydown', event => { tetris.controller(event) } )
+
+        // const tetris = new Tetris(TetrisElements)
+        // addEventListener('keydown', event => { tetris.move(event) } )
       
 /*
     J - Blue Ricky / blue_ricky, 
