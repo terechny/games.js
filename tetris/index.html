@@ -86,6 +86,8 @@
 
                 const activeClassElements = document.getElementsByClassName(classCurrent)
 
+                var blocks = this.checkOverSide(activeClassElements, styles)
+
                 for (var i = 0; i < activeClassElements.length; i++) {
 
                     let top =  activeClassElements[i].style.marginTop.length > 0 ? parseInt( activeClassElements[i].style.marginTop.slice(0, -2) ) : 0;
@@ -104,14 +106,22 @@
                                     activeClassElements[i].style.marginTop = ( top + item ) + "px" 
                                     break
 
-                                case 1:     
+                                case 1: 
 
-                                    activeClassElements[i].style.marginLeft = ( left - item ) + "px" 
-                                    break                                    
+                                    if( !blocks.hasOwnProperty('left') ){
+                                      
+                                        activeClassElements[i].style.marginLeft = ( left - item ) + "px"  
+                                    }    
+                                   
+                                    break                                  
 
-                                case 3:   
-
-                                    activeClassElements[i].style.marginLeft = ( left + item ) + "px"
+                                case 3:  
+                                
+                                    if( !blocks.hasOwnProperty('right') ){
+                                      
+                                        activeClassElements[i].style.marginLeft = ( left + item ) + "px"  
+                                    }
+                                
                                     break
                             }                             
                         }                       
@@ -119,6 +129,27 @@
                 }               
   
                 this.checkTouch()                             
+            }
+
+            checkOverSide(activeClassElements){
+
+                var blocks = {}
+
+                for (var i = 0; i < activeClassElements.length; i++) {
+
+                    let top =  activeClassElements[i].style.marginTop.length > 0 ? parseInt( activeClassElements[i].style.marginTop.slice(0, -2) ) : 0;
+                    let left =  activeClassElements[i].style.marginLeft.length > 0 ? parseInt( activeClassElements[i].style.marginLeft.slice(0, -2) ) : 0;
+
+                    if(left == 0){                  
+                        blocks['left'] = true
+                    }
+                    
+                    if(left >= 380){
+                        blocks['right'] = true
+                    }
+                    
+                }
+                return blocks 
             }
 
             touchElementCounter(){
